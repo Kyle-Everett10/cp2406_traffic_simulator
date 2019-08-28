@@ -52,21 +52,28 @@ public class vehicle
         return currentYFront;
     }
 
-    public String getOppositeDirection(){
-        if(direction == "north"){
-            return "south";
-        } else if (direction == "east"){
-            return "west";
-        } else if (direction == "south"){
-            return "north";
-        }
+    public String getDirection() {
+        return direction;
     }
 
-    public void collisionDetection(Vehicles[] otherCars){
-        for(int i = 0; i < otherCars.length; i++){
-            if(otherCars[i].getCurrentXFront == this.currentXFront && otherCars[i].getCurrentYFront == this.currentXFront){
-                this.drive();
-            } else(())
+    public int getLength() {
+        return length;
+    }
+
+    public boolean collisionDetection(vehicle otherCar){
+        boolean decision = true;
+        if((otherCar.getCurrentXFront() != this.getCurrentXFront() && otherCar.getCurrentYFront() != this.getCurrentYFront())&& otherCar.getDirection().equals(this.getDirection())) {
+            if(this.getDirection().equals("north")&& (otherCar.getCurrentYFront()-otherCar.getLength()-1) == this.getCurrentYFront()){
+                decision = false;
+            } else if (this.getDirection().equals("south") && (otherCar.getCurrentYFront()+otherCar.getLength()+1) == this.getCurrentYFront()){
+                decision = false;
+            } else if(this.getDirection().equals("east") && (otherCar.getCurrentXFront()-otherCar.getLength()-1)== this.getCurrentXFront()){
+                decision = false;
+            } else if(this.getDirection().equals("west") && (otherCar.getCurrentXFront()+otherCar.getLength()+1) == this.getCurrentXFront()){
+                decision = false;
+            }
+
         }
+        return decision;
     }
 }
