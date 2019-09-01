@@ -58,16 +58,28 @@ public class vehicle
         return length;
     }
 
+    public String getVehicleName() {
+        return vehicleName;
+    }
+
+    public int getCurrentXBack(){
+        return currentXBack;
+    }
+
+    public int getCurrentYBack() {
+        return currentYBack;
+    }
+
     public boolean collisionDetection(vehicle otherCar){
         boolean decision = true;
         if((otherCar.getCurrentXFront() != this.getCurrentXFront() && otherCar.getCurrentYFront() != this.getCurrentYFront())&& otherCar.getDirection().equals(this.getDirection())) {
-            if(this.getDirection().equals("north")&& (otherCar.getCurrentYFront()-otherCar.getLength()-1) == this.getCurrentYFront()){
+            if(this.getDirection().equals("north")&& (otherCar.getCurrentYBack()-1) == this.getCurrentYFront()){
                 decision = false;
-            } else if (this.getDirection().equals("south") && (otherCar.getCurrentYFront()+otherCar.getLength()+1) == this.getCurrentYFront()){
+            } else if (this.getDirection().equals("south") && (otherCar.getCurrentYBack()+1) == this.getCurrentYFront()){
                 decision = false;
-            } else if(this.getDirection().equals("east") && (otherCar.getCurrentXFront()-otherCar.getLength()-1)== this.getCurrentXFront()){
+            } else if(this.getDirection().equals("east") && (otherCar.getCurrentXBack()-1)== this.getCurrentXFront()){
                 decision = false;
-            } else if(this.getDirection().equals("west") && (otherCar.getCurrentXFront()+otherCar.getLength()+1) == this.getCurrentXFront()){
+            } else if(this.getDirection().equals("west") && (otherCar.getCurrentXBack()+1) == this.getCurrentXFront()){
                 decision = false;
             }
 
