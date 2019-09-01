@@ -1,5 +1,3 @@
-import java.lang.reflect.Array;
-
 public class vehicle
 {
     private final int DEFAULT_LENGTH = 4;
@@ -24,10 +22,10 @@ public class vehicle
         } else {
             length = DEFAULT_LENGTH/2;
         }
-        changeDirection(defaultDirection);
+        updateBackCoordinate(defaultDirection);
     }
 
-    public void changeDirection(String newDirection){
+    public void updateBackCoordinate(String newDirection){
         direction = newDirection;
         if(direction.equals("north")){
             currentXBack = currentXFront;
@@ -75,5 +73,21 @@ public class vehicle
 
         }
         return decision;
+    }
+
+    public void drive(){
+        if(this.getDirection().equals("north")){
+            this.currentYFront += 1;
+            this.updateBackCoordinate("north");
+        } else if(this.getDirection().equals("east")){
+            this.currentXFront += 1;
+            this.updateBackCoordinate("east");
+        } else if(this.getDirection().equals("south")){
+            this.currentYFront -= 1;
+            this.updateBackCoordinate("south");
+        } else {
+            this.currentXFront -= 1;
+            this.updateBackCoordinate("west");
+        }
     }
 }
