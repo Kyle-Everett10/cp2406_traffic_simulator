@@ -1,4 +1,6 @@
-public class vehicle
+package traffic_simulator;
+
+public class Vehicle
 {
     private final int DEFAULT_LENGTH = 4;
     private final int BREADTH = DEFAULT_LENGTH/2;
@@ -10,7 +12,7 @@ public class vehicle
     private int currentYBack;
     private int length;
     private String direction;
-    public vehicle(String type, String name, int startingX, int startingY, String defaultDirection){
+    public Vehicle(String type, String name, int startingX, int startingY, String defaultDirection){
         vehicleType = type;
         vehicleName = name;
         currentXFront = startingX; //Vehicles will have one x/y value for their front and another x/y value for their back
@@ -70,7 +72,7 @@ public class vehicle
         return currentYBack;
     }
 
-    public boolean collisionDetection(vehicle otherCar){
+    public boolean collisionDetection(Vehicle otherCar){
         boolean decision = true;
         if((otherCar.getCurrentXFront() != this.getCurrentXFront() && otherCar.getCurrentYFront() != this.getCurrentYFront())&& otherCar.getDirection().equals(this.getDirection())) {
             if(this.getDirection().equals("north")&& (otherCar.getCurrentYBack()-1) == this.getCurrentYFront()){
