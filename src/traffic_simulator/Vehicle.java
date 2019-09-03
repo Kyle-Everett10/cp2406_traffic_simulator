@@ -12,6 +12,7 @@ public class Vehicle
     private int currentYBack;
     private int length;
     private String direction;
+    boolean onIntersection = false;
     public Vehicle(String type, String name, int startingX, int startingY, String defaultDirection){
         vehicleType = type;
         vehicleName = name;
@@ -103,5 +104,11 @@ public class Vehicle
             this.currentXFront -= 1;
             this.updateBackCoordinate("west");
         }
+    }
+
+    public void snapOnIntersection(int currentXFront, int currentYFront, String direction) { //This handles turning on intersections
+        this.currentXFront = currentXFront;
+        this.currentYFront = currentYFront;
+        this.updateBackCoordinate(direction);
     }
 }
