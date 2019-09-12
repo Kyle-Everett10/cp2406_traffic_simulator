@@ -2,7 +2,6 @@ package traffic_simulator;
 
 public class TIntersection {
     final int SECTION_1_LENGTH = 36;
-    final int SECTION_2_LENGTH = 36;
     String intersectionName;
     int section1StartX;
     int section1StartY;

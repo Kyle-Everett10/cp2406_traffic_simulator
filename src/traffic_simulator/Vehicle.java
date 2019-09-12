@@ -2,7 +2,6 @@ package traffic_simulator;
 
 public class Vehicle {
     private final int DEFAULT_LENGTH = 4;
-    private final int BREADTH = DEFAULT_LENGTH / 2;
     private String vehicleType;
     private String vehicleName;
     private int currentXFront;
@@ -11,7 +10,6 @@ public class Vehicle {
     private int currentYBack;
     private int length;
     private String direction;
-    boolean onIntersection = false;
 
     public Vehicle(String type, String name, int startingX, int startingY, String defaultDirection) {
         vehicleType = type;
