@@ -21,4 +21,21 @@ public class Road {
             roadEnd2Y = roadEnd1Y;
         }
     }
+
+    public int getRoadEnd1X() {
+        return roadEnd1X;
+    }
+
+    public int getRoadEnd1Y() {
+        return roadEnd1Y;
+    }
+
+    public int getRoadEnd2X() {
+        return roadEnd2X;
+    }
+
+    public int getRoadEnd2Y() {
+        return roadEnd2Y;
+    }
+
 }

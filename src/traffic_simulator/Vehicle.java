@@ -106,6 +106,7 @@ public class Vehicle
         }
     }
 
+
     public void snapOnIntersection(int currentXFront, int currentYFront, String direction) { //This handles turning on intersections
         this.currentXFront = currentXFront;
         this.currentYFront = currentYFront;
