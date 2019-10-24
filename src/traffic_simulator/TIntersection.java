@@ -24,48 +24,48 @@ public class TIntersection {
         direction = newDirection;
         if(direction.equals("north")){
             section1EndX = section1StartX;
-            section1EndY = section1StartY + SECTION_1_LENGTH;
+            section1EndY = section1StartY - SECTION_1_LENGTH;
             section2StartX = section1EndX - 18;
-            section2StartY = section1EndY + 3;
+            section2StartY = section1EndY - 12;
             section2EndX = section1EndX + 18;
-            section2EndY = section1EndY + 3;
+            section2EndY = section1EndY - 3;
             middle1X = section1EndX - 2;
-            middle1Y = section1EndY + 1;
+            middle1Y = section1EndY - 1;
             middle2X = section2EndX + 2;
-            middle2Y = section2EndY + 4;
+            middle2Y = section2EndY - 4;
         } else if (direction.equals("south")){
             section1EndX = section1StartX;
-            section1EndY = section1StartY - SECTION_1_LENGTH;
+            section1EndY = section1StartY + SECTION_1_LENGTH;
             section2StartX = section1EndX + 18;
-            section2StartY = section1EndY - 3;
+            section2StartY = section1EndY - 1;
             section2EndX = section1EndX - 18;
-            section2EndY = section1EndY - 3;
+            section2EndY = section1EndY + 3;
             middle1X = section1EndX + 2;
-            middle1Y = section1EndY - 1;
+            middle1Y = section1EndY + 1;
             middle2X = section2EndX - 2;
-            middle2Y = section2EndY - 4;
+            middle2Y = section2EndY + 4;
         } else if (direction.equals("east")){
             section1EndX = section1StartX + SECTION_1_LENGTH;
             section1EndY = section1StartY;
-            section2StartX = section1EndX + 3;
-            section2StartY = section1EndY - 18;
+            section2StartX = section1EndX - 1;
+            section2StartY = section1EndY + 18;
             section2EndX = section1EndX + 3;
-            section2EndY = section1EndY + 18;
+            section2EndY = section1EndY - 18;
             middle1X = section1EndX + 1;
-            middle1Y = section1EndY - 2;
+            middle1Y = section1EndY + 2;
             middle2X = section1EndX + 4;
-            middle2Y = section1EndY + 2;
+            middle2Y = section1EndY - 2;
         } else {
             section1EndX = section1StartX - SECTION_1_LENGTH;
             section1EndY = section1StartY;
-            section2StartX = section1EndX - 3;
-            section2StartY = section1EndY + 18;
+            section2StartX = section1EndX - 4;
+            section2StartY = section1EndY - 18;
             section2EndX = section1EndX - 3;
-            section2EndY = section1EndY - 18;
+            section2EndY = section1EndY + 18;
             middle1X = section1EndX - 1;
-            middle1Y = section1EndY + 2;
+            middle1Y = section1EndY - 2;
             middle2X = section1EndX - 4;
-            middle2Y = section1EndY - 2;
+            middle2Y = section1EndY + 2;
         }
     }
 
@@ -113,6 +113,30 @@ public class TIntersection {
 
     public int getSection1EndY() {
         return section1EndY;
+    }
+
+    public int getSection1StartX() {
+        return section1StartX;
+    }
+
+    public int getSection1StartY() {
+        return section1StartY;
+    }
+
+    public int getSection2StartX() {
+        return section2StartX;
+    }
+
+    public int getSection2StartY() {
+        return section2StartY;
+    }
+
+    public int getSection2EndX() {
+        return section2EndX;
+    }
+
+    public int getSection2EndY() {
+        return section2EndY;
     }
 
     private boolean inBetween(int input, int max, int min){

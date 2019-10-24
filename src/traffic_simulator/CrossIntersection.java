@@ -28,7 +28,7 @@ public class CrossIntersection {
         road1EndX = road1StartX + ROAD_LENGTH;
         road1EndY = road1StartY;
         road2StartX = road1StartX + (ROAD_LENGTH/2);
-        road2StartY = road1StartY + (ROAD_LENGTH/2);
+        road2StartY = road1StartY - (ROAD_LENGTH/2);
         road2EndX = road2StartX;
         road2EndY = road2StartY - ROAD_LENGTH;
         westRoadX = road1StartX + 21;

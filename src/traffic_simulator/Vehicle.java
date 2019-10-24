@@ -30,13 +30,13 @@ public class Vehicle {
         direction = newDirection;
         if (direction.equals("north")) {
             currentXBack = currentXFront;
-            currentYBack = currentYFront - length;
+            currentYBack = currentYFront + length;
         } else if (direction.equals("east")) {
             currentXBack = currentXFront - length;
             currentYBack = currentYFront;
         } else if (direction.equals("south")) {
             currentXBack = currentXFront;
-            currentYBack = currentYFront + length;
+            currentYBack = currentYFront - length;
         } else {
             currentXBack = currentXFront + length;
             currentYBack = currentYFront;
@@ -74,9 +74,9 @@ public class Vehicle {
     public boolean collisionDetection(Vehicle otherCar) {
         boolean decision = true;
         if (otherCar.getDirection().equals(this.getDirection())) {
-            if (this.getDirection().equals("north") && (otherCar.getCurrentYBack() - 1) == this.getCurrentYFront() && otherCar.getCurrentXFront() == this.getCurrentXFront()) {
+            if (this.getDirection().equals("north") && (otherCar.getCurrentYBack() + 1) == this.getCurrentYFront() && otherCar.getCurrentXFront() == this.getCurrentXFront()) {
                 decision = false;
-            } else if (this.getDirection().equals("south") && (otherCar.getCurrentYBack() + 1) == this.getCurrentYFront() && otherCar.getCurrentXFront() == this.getCurrentXFront()) {
+            } else if (this.getDirection().equals("south") && (otherCar.getCurrentYBack() - 1) == this.getCurrentYFront() && otherCar.getCurrentXFront() == this.getCurrentXFront()) {
                 decision = false;
             } else if (this.getDirection().equals("east") && (otherCar.getCurrentXBack() - 1) == this.getCurrentXFront() && otherCar.getCurrentYFront() == this.getCurrentYFront()) {
                 decision = false;
@@ -90,13 +90,13 @@ public class Vehicle {
 
     public void drive() {
         if (this.getDirection().equals("north")) {
-            this.currentYFront += 1;
+            this.currentYFront -= 1;
             this.updateBackCoordinate("north");
         } else if (this.getDirection().equals("east")) {
             this.currentXFront += 1;
             this.updateBackCoordinate("east");
         } else if (this.getDirection().equals("south")) {
-            this.currentYFront -= 1;
+            this.currentYFront += 1;
             this.updateBackCoordinate("south");
         } else {
             this.currentXFront -= 1;
