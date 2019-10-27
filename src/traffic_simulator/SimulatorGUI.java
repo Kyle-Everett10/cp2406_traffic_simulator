@@ -14,7 +14,10 @@ public class SimulatorGUI extends JFrame implements ActionListener {
     CrossIntersection[] cross = {test2};
     JSimulatorGrid map = new JSimulatorGrid(roads, tIntersections, cross);
     JPanel fill = new JPanel();
-    JLabel text = new JLabel("blah, blah");
+    JButton newRoad = new JButton("Create a new road");
+    NewRoadConstructor testing1 = new NewRoadConstructor(roads, tIntersections, cross);
+    JLabel statusBar = new JLabel("");
+    JButton repainter = new JButton("Repaint map");
     int WIDTH = 1000;
     int HEIGHT = 500;
 
@@ -24,12 +27,25 @@ public class SimulatorGUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(WIDTH, HEIGHT);
         add(fill);
-        fill.add(text);
+        fill.add(newRoad);
+        fill.add(statusBar);
+        fill.add(repainter);
         add(map);
+        newRoad.addActionListener(this);
+        repainter.addActionListener(this);
     }
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        if(e.getSource() == newRoad){
+            testing1.setVisible(true);
+        } else if (e.getSource() == repainter){
+            roads = testing1.currentRoads;
+            remove(map);
+            map = new JSimulatorGrid(roads, tIntersections, cross);
+            add(map);
+            validate();
+            repaint();
+        }
     }
 
     public static void main(String[] args){
