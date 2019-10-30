@@ -8,9 +8,8 @@ import java.util.Random;
 
 public class SimulatorGUI extends JFrame implements ActionListener {
     Road road1Test = new Road("Road1", 0, 50, "west-east");
-    TIntersection intersectionTest = new TIntersection("Intersection 1", 36, 50, "east");
     Road[] roads = {road1Test};
-    TIntersection[] tIntersections = {intersectionTest};
+    TIntersection[] tIntersections = new TIntersection[10];
     CrossIntersection[] cross = new CrossIntersection[10];
     int spawnRate = 2;
     Vehicle[] vehicles = new Vehicle[spawnRate];

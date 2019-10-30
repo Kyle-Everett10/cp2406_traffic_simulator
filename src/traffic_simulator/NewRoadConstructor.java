@@ -57,6 +57,48 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
         cb.addActionListener(this);
     }
 
+    public void addCross(String newDirection){
+        CrossIntersection crossToAdd = new CrossIntersection(newRoadName.getText(), Integer.parseInt(xCoOrdinate.getText()), Integer.parseInt(yCoOrdinate.getText()), newDirection);
+        if(validateCrossEnds(crossToAdd)){
+            CrossIntersection[] tempArray = new CrossIntersection[currentCrossIntersections.length+1];
+            for(int i = 0; i < currentCrossIntersections.length; i++){
+                tempArray[i] = currentCrossIntersections[i];
+            }
+            tempArray[currentCrossIntersections.length] = crossToAdd;
+            currentCrossIntersections = tempArray;
+        }
+    }
+
+    public boolean validateCrossEnds(CrossIntersection judgingCross){
+        boolean crossValidated = true;
+        for(int i = 0; i < currentRoads.length; i++){
+            for(int j = 1; j < 36 ; j++){
+                if(inBetween(judgingCross.road1StartX+j, currentRoads[i].getRoadEnd1X(), currentRoads[i].getRoadEnd2X()) && inBetween(judgingCross.road1StartY+j, currentRoads[i].getRoadEnd1Y(), currentRoads[i].getRoadEnd2Y())){
+                    crossValidated = false;
+                }
+            }
+            if(crossValidated){
+                if(currentRoads[i].direction.equals("north-south")){
+                    if((judgingCross.eastRoadX == currentRoads[i].getRoadEnd1X() && judgingCross.eastRoadY == currentRoads[i].getRoadEnd1Y()) || (judgingCross.eastRoadX == currentRoads[i].getRoadEnd2X() && judgingCross.eastRoadY == currentRoads[i].getRoadEnd2Y()) || (judgingCross.westRoadX == currentRoads[i].getRoadEnd1X() && judgingCross.westRoadY == currentRoads[i].getRoadEnd1Y()) || (judgingCross.westRoadX == currentRoads[i].getRoadEnd2X() && judgingCross.westRoadY == currentRoads[i].getRoadEnd2Y())){
+                        crossValidated = false;
+                    }
+                }
+            }
+        }
+        if(crossValidated){
+            for(int i = 0; i < currentCrossIntersections.length ; i++){
+                if(currentCrossIntersections[i] != null){
+                    for(int j = 1; j < 36; j++){
+                        if(inBetween(judgingCross.road1StartX+j, currentCrossIntersections[i].road1StartX, currentCrossIntersections[i].road1EndX) && inBetween(judgingCross.road2StartY + j, currentCrossIntersections[i].road2StartY, currentCrossIntersections[i].road2EndY)){
+                            crossValidated = false;
+                        }
+                    }
+                }
+            }
+        }
+        return crossValidated;
+    }
+
     public void addRoad(String newDirection) {
         String direction;
         if (newDirection.equals("north") || newDirection.equals("south")) {
@@ -90,9 +132,25 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
                     roadValidated = false;
                 }
             }
-            if (roadValidated && ((judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd1X() || judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd2X() || judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd1X() || judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd2X()) && !judgingRoad.direction.equals(currentRoads[i].direction) && (judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd1Y() || judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd2Y() || judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd1Y() || judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd2Y()))) {
+            if (roadValidated && ((judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd1X() ||
+                    judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd2X() ||
+                    judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd1X() ||
+                    judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd2X()) &&
+                    !judgingRoad.direction.equals(currentRoads[i].direction) &&
+                    (judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd1Y() ||
+                            judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd2Y() ||
+                            judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd1Y() ||
+                            judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd2Y()))) {
                 roadValidated = false;
-            } else if (roadValidated && ((judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd1Y() || judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd2Y() || judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd1Y() || judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd2X()) && !judgingRoad.direction.equals(currentRoads[i].direction) && (judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd1X() || judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd2X() || judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd1X() || judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd2X()))) {
+            } else if (roadValidated && ((judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd1Y() ||
+                    judgingRoad.getRoadEnd1Y() == currentRoads[i].getRoadEnd2Y() ||
+                    judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd1Y() ||
+                    judgingRoad.getRoadEnd2Y() == currentRoads[i].getRoadEnd2X()) &&
+                    !judgingRoad.direction.equals(currentRoads[i].direction) &&
+                    (judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd1X() ||
+                            judgingRoad.getRoadEnd1X() == currentRoads[i].getRoadEnd2X() ||
+                            judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd1X() ||
+                            judgingRoad.getRoadEnd2X() == currentRoads[i].getRoadEnd2X()))) {
                 roadValidated = false;
             }
         }
@@ -131,6 +189,8 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
         if (e.getSource() == creation) {
             if (roadType == 0) {
                 addRoad(initialDirection);
+            } else if(roadType == 2){
+                addCross(initialDirection);
             }
         } else if (e.getSource() == north) {
             initialDirection = "north";
