@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class SimulatorGUI extends JFrame implements ActionListener {
@@ -11,7 +13,7 @@ public class SimulatorGUI extends JFrame implements ActionListener {
     Road[] roads = {road1Test};
     TIntersection[] tIntersections = new TIntersection[10];
     CrossIntersection[] cross = new CrossIntersection[10];
-    int spawnRate = 2;
+    int spawnRate = 4;
     Vehicle[] vehicles = new Vehicle[spawnRate];
     JSimulatorGrid map = new JSimulatorGrid(roads, tIntersections, cross, vehicles);
     JPanel fill = new JPanel();
@@ -19,7 +21,11 @@ public class SimulatorGUI extends JFrame implements ActionListener {
     NewRoadConstructor testing1 = new NewRoadConstructor(roads, tIntersections, cross);
     JLabel statusBar = new JLabel("");
     JButton repainter = new JButton("Repaint map");
-    JButton startSimulation = new JButton("Star Simulation");
+    JButton startSimulation = new JButton("Start Simulation");
+    JButton saveMap = new JButton("Save current map");
+    JButton loadMap = new JButton("Load map");
+    JButton simulationOptions = new JButton("Simulation options");
+    JButton viewRoadEnds = new JButton("View the road ends by co-ordinate");
     Random rand = new Random();
     Timer timer = new Timer(100, this);
     final double ONE_DAY = 50;
@@ -33,15 +39,21 @@ public class SimulatorGUI extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(WIDTH, HEIGHT);
         add(fill);
-        fill.setLayout(new GridLayout(3, 2));
+        fill.setLayout(new GridLayout(4, 2));
         fill.add(newRoad);
-        fill.add(statusBar);
         fill.add(repainter);
         fill.add(startSimulation);
+        fill.add(simulationOptions);
+        fill.add(saveMap);
+        fill.add(loadMap);
+        fill.add(viewRoadEnds);
+        fill.add(statusBar);
         add(map);
         newRoad.addActionListener(this);
         repainter.addActionListener(this);
         startSimulation.addActionListener(this);
+        loadMap.addActionListener(this);
+        viewRoadEnds.addActionListener(this);
     }
 
     @Override
@@ -60,7 +72,7 @@ public class SimulatorGUI extends JFrame implements ActionListener {
         } else if (e.getSource() == startSimulation) {
             time = 0.0;
             runSimulation();
-        } else if (e.getSource() == timer){
+        } else if (e.getSource() == timer) {
             vehicles = spawnCars(vehicles);
             driveCars();
             time += 0.1;
@@ -70,12 +82,69 @@ public class SimulatorGUI extends JFrame implements ActionListener {
             validate();
             repaint();
             time += 0.001;
-            if(time >= ONE_DAY){
+            if (time >= ONE_DAY) {
                 timer.stop();
             }
+        } else if (e.getSource() == loadMap) {
+            loadFile();
+        } else if (e.getSource() == viewRoadEnds) {
+            roadEnder();
         }
     }
 
+    public void roadEnder() {
+        StringBuilder message = new StringBuilder("These roads are available to be added onto:\n");
+        for (int i = 0; i < roads.length; i++) {
+            boolean roadEnd1Empty = true;
+            boolean roadEnd2Empty = true;
+            for (int j = 0; j < roads.length; j++) {
+                if (roads[j] != roads[i] && roads[j] != null) {
+                    if (roads[j].getRoadEnd1X() == roads[i].getRoadEnd2X() && roads[j].getRoadEnd1Y() == roads[i].getRoadEnd2Y()) {
+                        roadEnd2Empty = false;
+                    }
+                    if (roads[j].getRoadEnd2X() == roads[i].getRoadEnd1X() && roads[j].getRoadEnd2Y() == roads[i].getRoadEnd1Y()) {
+                        roadEnd1Empty = false;
+                    }
+                }
+            }
+            for (int j = 0; j < cross.length; j++) {
+                if (cross[j] != null) {
+                    if (roadEnd1Empty && ((cross[j].road1EndX == roads[i].getRoadEnd1X() && cross[j].road1EndY == roads[i].getRoadEnd1Y()) || (cross[j].road2EndX == roads[i].getRoadEnd1X() && cross[j].road2EndY == roads[i].getRoadEnd1Y()))) {
+                        roadEnd1Empty = false;
+                    }
+                    if (roadEnd2Empty && ((cross[j].road1StartX == roads[i].getRoadEnd2X() && cross[j].road1StartY == roads[i].getRoadEnd2Y()) || (cross[j].road2StartX == roads[i].getRoadEnd2X() && cross[j].road2StartY == roads[i].getRoadEnd2Y()))) {
+                        roadEnd2Empty = false;
+                    }
+                }
+            }
+            for (int j = 0; j < tIntersections.length; j++) {
+                if (tIntersections[j] != null) {
+                    if (roadEnd1Empty && ((tIntersections[j].getSection1StartX() == roads[i].getRoadEnd1X() && tIntersections[j].getSection1StartY() == roads[i].getRoadEnd1Y()) || (tIntersections[j].getSection2StartX() == roads[i].getRoadEnd1X() && tIntersections[j].getSection2StartY() == roads[j].getRoadEnd1Y()) || (tIntersections[j].section2EndX == roads[i].getRoadEnd1X() && tIntersections[j].section2EndY == roads[i].getRoadEnd1Y()))) {
+                        roadEnd1Empty = false;
+                    }
+                    if (roadEnd2Empty && ((tIntersections[j].getSection1StartX() == roads[i].getRoadEnd2X() && tIntersections[j].getSection1StartY() == roads[i].getRoadEnd2Y()) || (tIntersections[j].getSection2StartX() == roads[i].getRoadEnd2X() && tIntersections[j].getSection2StartY() == roads[j].getRoadEnd2Y()) || (tIntersections[j].section2EndX == roads[i].getRoadEnd2X() && tIntersections[j].section2EndY == roads[i].getRoadEnd2Y()))) {
+                        roadEnd2Empty = false;
+                    }
+                }
+            }
+            if (roadEnd1Empty) {
+                int xBuilder;
+                int yBuilder;
+                if (roads[i].direction.equals("north-south")) {
+                    xBuilder = roads[i].getRoadEnd1X();
+                    yBuilder = roads[i].getRoadEnd1Y() - 36;
+                } else {
+                    xBuilder = roads[i].getRoadEnd1X() - 36;
+                    yBuilder = roads[i].getRoadEnd1Y();
+                }
+                message.append("Road name: ").append(roads[i].roadName).append(", x: ").append(roads[i].getRoadEnd1X()).append(", y: ").append(roads[i].getRoadEnd1Y()).append("\n To build on this part of road, enter x: ").append(xBuilder).append(", y: ").append(yBuilder).append(" with direction: ").append(roads[i].direction).append("\n");
+            }
+            if(roadEnd2Empty){
+                message.append("Road name: ").append(roads[i].roadName).append(", x: ").append(roads[i].getRoadEnd1X()).append(", y: ").append(roads[i].getRoadEnd1Y()).append("\n To build on this part of road, enter x: ").append(roads[i].getRoadEnd2X()).append(", y: ").append(roads[i].getRoadEnd2Y()).append(" with direction: ").append(roads[i].direction).append("\n");
+            }
+        }
+        JOptionPane.showMessageDialog(null, message.toString(), "message", JOptionPane.INFORMATION_MESSAGE);
+    }
 
     public void runSimulation() {
         timer.start();
@@ -104,8 +173,7 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                 crossCarIsOn = cross[j];
                             }
                         } else if (vehicles[i].getDirection().equals("south")) {
-                            if (vehicles[i].getCurrentXFront() == cross[j].northRoadX && vehicles[i].getCurrentYFront() == cross[j].northRoadX)
-                            {
+                            if (vehicles[i].getCurrentXFront() == cross[j].northRoadX && vehicles[i].getCurrentYFront() == cross[j].northRoadX) {
                                 onIntersection = true;
                                 crossCarIsOn = cross[j];
                             }
@@ -124,29 +192,29 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                 }
                 if (!onIntersection) {
                     for (int j = 0; j < tIntersections.length; j++) {
-                        if(tIntersections[j] != null){
-                            if (vehicles[i].getDirection().equals(tIntersections[j].direction)){
-                                switch(vehicles[i].getDirection()){
+                        if (tIntersections[j] != null) {
+                            if (vehicles[i].getDirection().equals(tIntersections[j].direction)) {
+                                switch (vehicles[i].getDirection()) {
                                     case "north":
-                                        if(vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX()-2 && vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY()){
+                                        if (vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX() - 2 && vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY()) {
                                             onTIntersection = true;
                                             intersectionCarIsOn = tIntersections[j];
                                         }
                                         break;
                                     case "south":
-                                        if(vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX()+2 && vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY()){
+                                        if (vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX() + 2 && vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY()) {
                                             onTIntersection = true;
                                             intersectionCarIsOn = tIntersections[j];
                                         }
                                         break;
                                     case "east":
-                                        if(vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY()+2 && vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX()){
+                                        if (vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY() + 2 && vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX()) {
                                             onTIntersection = true;
                                             intersectionCarIsOn = tIntersections[j];
                                         }
                                         break;
                                     default:
-                                        if(vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY()-2 && vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX()){
+                                        if (vehicles[i].getCurrentYFront() == tIntersections[j].getSection1EndY() - 2 && vehicles[i].getCurrentXFront() == tIntersections[j].getSection1EndX()) {
                                             onTIntersection = true;
                                             intersectionCarIsOn = tIntersections[j];
                                         }
@@ -211,10 +279,10 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                             vehicles[i].snapOnIntersection(crossCarIsOn.getEastSnapX(), crossCarIsOn.getEastSnapY(), "east");
                                             break;
                                         case "east":
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX(), crossCarIsOn.getNorthSnapY(), "north");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX() + 2, crossCarIsOn.getNorthSnapY(), "north");
                                             break;
                                         default:
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX(), crossCarIsOn.getSouthSnapY(), "south");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX() - 2, crossCarIsOn.getSouthSnapY(), "south");
                                     }
                                 } else if (decision == 2) {
                                     switch (vehicles[i].getDirection()) {
@@ -225,10 +293,10 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                             vehicles[i].snapOnIntersection(crossCarIsOn.getWestSnapX(), crossCarIsOn.getWestSnapY(), "west");
                                             break;
                                         case "east":
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX(), crossCarIsOn.getSouthSnapY(), "south");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX() - 2, crossCarIsOn.getSouthSnapY(), "south");
                                             break;
                                         default:
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX(), crossCarIsOn.getNorthSnapY(), "north");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX() + 2, crossCarIsOn.getNorthSnapY(), "north");
                                     }
                                 } else {
                                     vehicles[i].drive();
@@ -237,7 +305,24 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                         }
                     }
                 }
+                if (vehicles[i].getCurrentYFront() < 0 || vehicles[i].getCurrentYFront() > 500 || vehicles[i].getCurrentXFront() < 0 || vehicles[i].getCurrentXFront() > 500) {
+                    vehicles[i] = null;
+                }
             }
+        }
+    }
+
+    public void saveFile() {
+
+    }
+
+    public void loadFile() {
+        File folder = new File("savedMaps");
+        File[] listOfFiles = folder.listFiles();
+        if (listOfFiles.length > 0) {
+            JOptionPane.showMessageDialog(null, "Test failed", "Message", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "No files to load", "Message", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -255,7 +340,7 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                         if (roads[j].roadEnd1X == 0 || roads[j].roadEnd1Y == 0) {
                             for (int k = 0; k < car.length; k++) {
                                 if (car[k] != null) {
-                                    if ((car[k].getCurrentYBack() - 3 <= roads[j].getRoadEnd1Y() && roads[j].direction.equals("north-south")) || (car[k].getCurrentXBack() - 3 <= roads[j].getRoadEnd1X() && roads[j].direction.equals("west-east"))) {
+                                    if ((car[k].getCurrentYBack() - 3 <= roads[j].getRoadEnd1Y() && roads[j].direction.equals("north-south") && car[k].getCurrentXFront() - 2 == roads[j].getRoadEnd1X()) || (car[k].getCurrentXBack() - 3 <= roads[j].getRoadEnd1X() && roads[j].direction.equals("west-east") && car[k].getCurrentYFront() - 2 == roads[j].getRoadEnd1Y())) {
                                         canSpawn = false;
                                     }
                                 } else if (i == 0) {
@@ -272,26 +357,24 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                     foundRoad = roads[j];
                                     canSpawn = false;
                                 }
-                                if (canSpawn) {
-                                    if (roads[j].direction.equals("north-south")) {
-                                        spawnDirection = "north";
-                                        spawnX = roads[j].getRoadEnd1X() - 2;
-                                        spawnY = roads[j].getRoadEnd1Y();
-                                    } else {
-                                        spawnDirection = "east";
-                                        spawnX = roads[j].getRoadEnd1X();
-                                        spawnY = roads[j].getRoadEnd1Y() + 2;
-                                    }
-                                    spawningRoad = true;
-                                    foundRoad = roads[j];
-                                }
                             }
-
+                            if (canSpawn) {
+                                if (roads[j].direction.equals("north-south")) {
+                                    spawnDirection = "south";
+                                    spawnX = roads[j].getRoadEnd1X() - 2;
+                                    spawnY = roads[j].getRoadEnd1Y();
+                                } else {
+                                    spawnDirection = "east";
+                                    spawnX = roads[j].getRoadEnd1X();
+                                    spawnY = roads[j].getRoadEnd1Y() + 2;
+                                }
+                                spawningRoad = true;
+                                foundRoad = roads[j];
+                            }
                         }
                     }
                     if (spawningRoad) {
-                        car[i] = new Vehicle("car", "car" + (i + 1), spawnX, spawnY, spawnDirection);
-                        System.out.println("Created " + car[i].getCurrentXFront());
+                        car[i] = new Vehicle("Car", "car" + (i + 1), spawnX, spawnY, spawnDirection);
                     }
                 }
             }

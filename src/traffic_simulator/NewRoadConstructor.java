@@ -176,7 +176,7 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
         return roadValidated;
     }
 
-    public boolean inBetween(int value, int min, int max) {
+    private boolean inBetween(int value, int min, int max) {
         boolean isInBetween = true;
         if (value < min || value > max) {
             isInBetween = false;
