@@ -18,10 +18,12 @@ public class JSimulatorGrid extends JPanel {
         g.fillRect(0, 0, WIDTH, HEIGHT);
         for (int i = 0; i < roadsOnGrid.length; i++) {
             g.setColor(Color.BLACK);
-            if (roadsOnGrid[i].direction.equals("north-south")) {
-                g.fillRect(roadsOnGrid[i].getRoadEnd1X(), roadsOnGrid[i].getRoadEnd1Y(), 5, roadsOnGrid[i].ROAD_LENGTH);
-            } else {
-                g.fillRect(roadsOnGrid[i].getRoadEnd1X(), roadsOnGrid[i].getRoadEnd1Y(), roadsOnGrid[i].ROAD_LENGTH, 5);
+            if(roadsOnGrid[i] != null){
+                if (roadsOnGrid[i].direction.equals("north-south")) {
+                    g.fillRect(roadsOnGrid[i].getRoadEnd1X(), roadsOnGrid[i].getRoadEnd1Y(), 5, roadsOnGrid[i].ROAD_LENGTH);
+                } else {
+                    g.fillRect(roadsOnGrid[i].getRoadEnd1X(), roadsOnGrid[i].getRoadEnd1Y(), roadsOnGrid[i].ROAD_LENGTH, 5);
+                }
             }
         }
 

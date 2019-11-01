@@ -4,9 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -91,7 +96,11 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                 timer.stop();
             }
         } else if (e.getSource() == loadMap) {
-            loadFile();
+            try {
+                loadFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         } else if (e.getSource() == viewRoadEnds) {
             roadEnder();
         } else if (e.getSource() == saveMap){
@@ -500,53 +509,148 @@ public class SimulatorGUI extends JFrame implements ActionListener {
 
     public void saveFile() throws IOException {
         String fileName = JOptionPane.showInputDialog(null, "Enter a file name for your map: ");
-        FileWriter writer = null;
-        writer = new FileWriter("savedMaps\\"+fileName);
+        FileWriter writer = new FileWriter("savedMaps\\"+fileName+".csv");
         for(int i = 0; i < roads.length; i++){
-            writer.append("road");
-            writer.append(',');
-            writer.append(roads[i].roadName);
-            writer.append(',');
-            writer.append(String.valueOf(roads[i].getRoadEnd1X()));
-            writer.append(',');
-            writer.append(String.valueOf(roads[i].getRoadEnd1Y()));
-            writer.append(',');
-            writer.append(roads[i].direction);
-            writer.append('\n');
+            writer.write("road");
+            writer.write(',');
+            writer.write(roads[i].roadName);
+            writer.write(',');
+            writer.write(String.valueOf(roads[i].getRoadEnd1X()));
+            writer.write(',');
+            writer.write(String.valueOf(roads[i].getRoadEnd1Y()));
+            writer.write(',');
+            writer.write(roads[i].direction);
+            writer.write('\n');
         }
         for(int i = 0; i < cross.length; i++){
             if(cross[i] == null){
-                writer.append("cross");
-                writer.append(',');
-                writer.append("null");
-                writer.append('\n');
+                writer.write("cross");
+                writer.write(',');
+                writer.write("null");
+                writer.write('\n');
             } else {
-                writer.append("cross");
-                writer.append(',');
-                writer.append(cross[i].roadName);
-                writer.append(',');
-                writer.append(String.valueOf(cross[i].road1StartX));
-                writer.append(',');
-                writer.append(String.valueOf(cross[i].road1StartY));
-                writer.append(',');
-                writer.append(cross[i].light);
-                writer.append('\n');
+                writer.write("cross");
+                writer.write(',');
+                writer.write(cross[i].roadName);
+                writer.write(',');
+                writer.write(String.valueOf(cross[i].road1StartX));
+                writer.write(',');
+                writer.write(String.valueOf(cross[i].road1StartY));
+                writer.write(',');
+                writer.write(cross[i].light);
+                writer.write('\n');
             }
         }
         for(int i = 0; i < tIntersections.length; i++){
-            writer.append("TIntersection");
-            writer.append(',');
-            writer.append("null");
-            writer.append('\n');
+            writer.write("TIntersection");
+            writer.write(',');
+            writer.write("null");
+            writer.write('\n');
         }
         JOptionPane.showMessageDialog(null, "Saving succeeded!", "message", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void loadFile() {
+    public void loadFile() throws IOException {
         File folder = new File("savedMaps");
         File[] listOfFiles = folder.listFiles();
         if (listOfFiles.length > 0) {
-            JOptionPane.showMessageDialog(null, "Test failed", "Message", JOptionPane.INFORMATION_MESSAGE);
+            String[] filenames = new String[10];
+            for(int i = 0; i < listOfFiles.length; i++){
+                filenames[i] = listOfFiles[i].getName();
+            }
+            String input = (String) JOptionPane.showInputDialog(null, "Choose file to load", "load file", JOptionPane.QUESTION_MESSAGE, null, filenames, filenames[0]);
+            Path fileToLoad = Paths.get("savedMaps\\"+input);
+            BufferedReader br = Files.newBufferedReader(fileToLoad, StandardCharsets.US_ASCII);
+            Road[] roadsToLoad = new Road[1];
+            int roadCounter = 0;
+            CrossIntersection[] crossesToLoad = new CrossIntersection[1];
+            int crossCounter = 0;
+            TIntersection[] intersectionsToLoad = new TIntersection[1];
+            int intersectionCounter = 0;
+            String line = br.readLine();
+            while(line != null){
+                String[] attributes = line.split(",");
+                if(attributes[0].equals("road")){
+                    if(roadCounter == 0){
+                        Road newRoad = new Road(attributes[1], Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]), attributes[4]);
+                        roadsToLoad[0] = newRoad;
+                        roadCounter += 1;
+                    } else {
+                        Road newRoad = new Road(attributes[1], Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]), attributes[4]);
+                        Road[] tempArray = new Road[roadsToLoad.length+1];
+                        for(int i=0; i < roadsToLoad.length; i++){
+                            tempArray[i] = roadsToLoad[i];
+                        }
+                        tempArray[roadsToLoad.length] = newRoad;
+                        roadsToLoad = tempArray;
+                    }
+                } else if(attributes[0].equals("cross")){
+                    if(crossCounter == 0){
+                        if(!attributes[1].equals("null")){
+                            CrossIntersection crossIntersection = new CrossIntersection(attributes[1], Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]), attributes[4]);
+                            crossesToLoad[0] = crossIntersection;
+                            crossCounter += 1;
+                        } else {
+                            crossesToLoad[0] = null;
+                            crossCounter += 1;
+                        }
+                    } else {
+                        if(!attributes[1].equals("null")){
+                            CrossIntersection crossIntersection = new CrossIntersection(attributes[1], Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]), attributes[4]);
+                            CrossIntersection[] tempArray = new CrossIntersection[crossesToLoad.length+1];
+                            for(int i = 0; i < crossesToLoad.length; i ++){
+                                tempArray[i] = crossesToLoad[i];
+                            }
+                            tempArray[crossesToLoad.length] = crossIntersection;
+                            crossesToLoad = tempArray;
+                        } else {
+                            CrossIntersection[] tempArray = new CrossIntersection[crossesToLoad.length+1];
+                            for(int i = 0; i < crossesToLoad.length; i ++){
+                                tempArray[i] = crossesToLoad[i];
+                            }
+                            tempArray[crossesToLoad.length] = null;
+                            crossesToLoad = tempArray;
+                        }
+                    }
+                } else {
+                    if(intersectionCounter == 0){
+                        if(!attributes[1].equals("null")){
+                            TIntersection tRoad = new TIntersection(attributes[1], Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]), attributes[4]);
+                            intersectionsToLoad[0] = tRoad;
+                            intersectionCounter += 1;
+                        } else {
+                            intersectionsToLoad[0] = null;
+                            intersectionCounter += 1;
+                        }
+                    } else {
+                        if(!attributes[1].equals("null")){
+                            TIntersection tRoad = new TIntersection(attributes[1], Integer.parseInt(attributes[2]), Integer.parseInt(attributes[3]), attributes[4]);
+                            TIntersection[] tempArray = new TIntersection[intersectionsToLoad.length+1];
+                            for(int i = 0; i < crossesToLoad.length; i ++){
+                                tempArray[i] = intersectionsToLoad[i];
+                            }
+                            tempArray[crossesToLoad.length] = tRoad;
+                            intersectionsToLoad = tempArray;
+                        } else {
+                            TIntersection[] tempArray = new TIntersection[intersectionsToLoad.length+1];
+                            for(int i = 0; i < crossesToLoad.length; i ++){
+                                tempArray[i] = intersectionsToLoad[i];
+                            }
+                            tempArray[crossesToLoad.length] = null;
+                            intersectionsToLoad = tempArray;
+                        }
+                    }
+                }
+                line = br.readLine();
+            }
+            roads = roadsToLoad;
+            cross = crossesToLoad;
+            tIntersections = intersectionsToLoad;
+            remove(map);
+            map = new JSimulatorGrid(roads, tIntersections, cross, vehicles);
+            add(map);
+            validate();
+            repaint();
         } else {
             JOptionPane.showMessageDialog(null, "No files to load", "Message", JOptionPane.INFORMATION_MESSAGE);
         }
