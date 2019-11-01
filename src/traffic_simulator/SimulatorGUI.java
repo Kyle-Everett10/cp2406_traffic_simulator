@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -55,6 +57,7 @@ public class SimulatorGUI extends JFrame implements ActionListener {
         repainter.addActionListener(this);
         startSimulation.addActionListener(this);
         loadMap.addActionListener(this);
+        saveMap.addActionListener(this);
         viewRoadEnds.addActionListener(this);
     }
 
@@ -91,6 +94,12 @@ public class SimulatorGUI extends JFrame implements ActionListener {
             loadFile();
         } else if (e.getSource() == viewRoadEnds) {
             roadEnder();
+        } else if (e.getSource() == saveMap){
+            try {
+                saveFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -489,8 +498,48 @@ public class SimulatorGUI extends JFrame implements ActionListener {
         }
     }
 
-    public void saveFile() {
-
+    public void saveFile() throws IOException {
+        String fileName = JOptionPane.showInputDialog(null, "Enter a file name for your map: ");
+        FileWriter writer = null;
+        writer = new FileWriter("savedMaps\\"+fileName);
+        for(int i = 0; i < roads.length; i++){
+            writer.append("road");
+            writer.append(',');
+            writer.append(roads[i].roadName);
+            writer.append(',');
+            writer.append(String.valueOf(roads[i].getRoadEnd1X()));
+            writer.append(',');
+            writer.append(String.valueOf(roads[i].getRoadEnd1Y()));
+            writer.append(',');
+            writer.append(roads[i].direction);
+            writer.append('\n');
+        }
+        for(int i = 0; i < cross.length; i++){
+            if(cross[i] == null){
+                writer.append("cross");
+                writer.append(',');
+                writer.append("null");
+                writer.append('\n');
+            } else {
+                writer.append("cross");
+                writer.append(',');
+                writer.append(cross[i].roadName);
+                writer.append(',');
+                writer.append(String.valueOf(cross[i].road1StartX));
+                writer.append(',');
+                writer.append(String.valueOf(cross[i].road1StartY));
+                writer.append(',');
+                writer.append(cross[i].light);
+                writer.append('\n');
+            }
+        }
+        for(int i = 0; i < tIntersections.length; i++){
+            writer.append("TIntersection");
+            writer.append(',');
+            writer.append("null");
+            writer.append('\n');
+        }
+        JOptionPane.showMessageDialog(null, "Saving succeeded!", "message", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void loadFile() {
