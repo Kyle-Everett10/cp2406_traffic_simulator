@@ -19,7 +19,7 @@ public class JSimulatorGrid extends JPanel {
         for (int i = 0; i < roadsOnGrid.length; i++) {
             g.setColor(Color.BLACK);
             if (roadsOnGrid[i].direction.equals("north-south")) {
-                g.fillRect(roadsOnGrid[i].getRoadEnd1X(), roadsOnGrid[i].getRoadEnd1Y(), 5, roadsOnGrid[i].ROAD_LENGTH);
+                g.fillRect(roadsOnGrid[i].getRoadEnd1X()-2, roadsOnGrid[i].getRoadEnd1Y(), 5, roadsOnGrid[i].ROAD_LENGTH);
             } else {
                 g.fillRect(roadsOnGrid[i].getRoadEnd1X(), roadsOnGrid[i].getRoadEnd1Y(), roadsOnGrid[i].ROAD_LENGTH, 5);
             }
@@ -47,7 +47,7 @@ public class JSimulatorGrid extends JPanel {
         for (int i = 0; i < crossIntersectionOnGrid.length; i++) {
             if(crossIntersectionOnGrid[i] != null){
                 g.fillRect(crossIntersectionOnGrid[i].road1StartX, crossIntersectionOnGrid[i].road1StartY, crossIntersectionOnGrid[i].ROAD_LENGTH, 5);
-                g.fillRect(crossIntersectionOnGrid[i].road2StartX, crossIntersectionOnGrid[i].road2StartY, 5, crossIntersectionOnGrid[i].ROAD_LENGTH);
+                g.fillRect(crossIntersectionOnGrid[i].road2StartX-2, crossIntersectionOnGrid[i].road2StartY, 5, crossIntersectionOnGrid[i].ROAD_LENGTH);
             }
         }
 

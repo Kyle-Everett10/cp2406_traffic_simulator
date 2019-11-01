@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class SimulatorGUI extends JFrame implements ActionListener {
-    Road road1Test = new Road("Road1", 0, 50, "west-east");
+    Road road1Test = new Road("Road1", 0, 250, "west-east");
     Road[] roads = {road1Test};
     TIntersection[] tIntersections = new TIntersection[10];
     CrossIntersection[] cross = new CrossIntersection[10];
@@ -139,8 +139,74 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                 }
                 message.append("Road name: ").append(roads[i].roadName).append(", x: ").append(roads[i].getRoadEnd1X()).append(", y: ").append(roads[i].getRoadEnd1Y()).append("\n To build on this part of road, enter x: ").append(xBuilder).append(", y: ").append(yBuilder).append(" with direction: ").append(roads[i].direction).append("\n");
             }
-            if(roadEnd2Empty){
+            if (roadEnd2Empty) {
                 message.append("Road name: ").append(roads[i].roadName).append(", x: ").append(roads[i].getRoadEnd1X()).append(", y: ").append(roads[i].getRoadEnd1Y()).append("\n To build on this part of road, enter x: ").append(roads[i].getRoadEnd2X()).append(", y: ").append(roads[i].getRoadEnd2Y()).append(" with direction: ").append(roads[i].direction).append("\n");
+            }
+        }
+        for (int i = 0; i < cross.length; i++) {
+            if (cross[i] != null) {
+                boolean northFree = true;
+                boolean southFree = true;
+                boolean eastFree = true;
+                boolean westFree = true;
+                for (int j = 0; j < roads.length; j++) {
+                    if (cross[i].road2StartX == roads[j].getRoadEnd2X() && cross[i].road2StartY == roads[j].getRoadEnd2Y()) {
+                        northFree = false;
+                    }
+                    if (cross[i].road2EndX == roads[j].getRoadEnd1X() && cross[i].road2EndY == roads[j].getRoadEnd1Y()) {
+                        southFree = false;
+                    }
+                    if (cross[i].road1StartX == roads[j].getRoadEnd2X() && cross[i].road1StartY == roads[j].getRoadEnd2Y()) {
+                        westFree = false;
+                    }
+                    if (cross[i].road1EndX == roads[j].getRoadEnd1X() && cross[i].road1EndY == roads[j].getRoadEnd1Y()){
+                        eastFree = false;
+                    }
+                }
+                for(int j = 0; j < cross.length; j++){
+                    if(cross[j] != cross[i] && cross[j]!=null){
+                        if(northFree && cross[j].road2EndX == cross[i].road2StartX && cross[j].road2EndY == cross[i].road2StartY){
+                            northFree = false;
+                        }
+                        if(southFree && cross[j].road2StartX == cross[i].road2EndX && cross[j].road2StartY == cross[i].road2EndY){
+                            southFree = false;
+                        }
+                        if(westFree && cross[j].road1EndX == cross[i].road1StartX && cross[j].road1EndY == cross[i].road1StartY){
+                            westFree = false;
+                        }
+                        if(eastFree && cross[j].road1StartX == cross[i].road1EndX && cross[j].road1StartY == cross[i].road1EndY){
+                            eastFree = false;
+                        }
+                    }
+                }
+                for(int j = 0; j < tIntersections.length; j++){
+                    if(tIntersections[j] != null){
+                        if(northFree && ((tIntersections[j].section1StartX == cross[i].road2StartX && tIntersections[j].section1StartY == cross[i].road2StartY) || (tIntersections[j].section2StartX == cross[i].road2StartX && tIntersections[j].section2StartY == cross[i].road2StartY) || (tIntersections[j].section2EndX == cross[i].road2StartX && tIntersections[j].section2EndY == cross[i].road2StartY))){
+                            northFree = false;
+                        }
+                        if(southFree && ((tIntersections[j].section1StartX == cross[i].road2EndX && tIntersections[j].section1StartY == cross[i].road2EndY) || (tIntersections[j].section2StartX == cross[i].road2EndX && tIntersections[j].section2StartY == cross[i].road2EndY) || (tIntersections[j].section2EndX == cross[i].road2EndX && tIntersections[j].section2EndY == cross[i].road2EndY))){
+                            southFree = false;
+                        }
+                        if(westFree && ((tIntersections[j].section1StartX == cross[i].road1StartX && tIntersections[j].section1StartY == cross[i].road1StartY) || (tIntersections[j].section2StartX == cross[i].road1StartX && tIntersections[j].section2StartY == cross[i].road1StartY) || (tIntersections[j].section2EndX == cross[i].road1StartX && tIntersections[j].section2EndY == cross[i].road1StartY))){
+                            westFree = false;
+                        }
+                        if(eastFree && ((tIntersections[j].section1StartX == cross[i].road1EndX && tIntersections[j].section1StartY == cross[i].road1EndY) || (tIntersections[j].section2StartX == cross[i].road1EndX && tIntersections[j].section2StartY == cross[i].road1EndY) || (tIntersections[j].section2EndX == cross[i].road1EndX && tIntersections[j].section2EndY == cross[i].road1EndY))){
+                            eastFree = false;
+                        }
+                    }
+                }
+                if(northFree){
+                    message.append("Road name: ").append(cross[i].roadName).append(" north, x: ").append(cross[i].road2StartX).append(", y: ").append(cross[i].road2StartY).append("\n To build, make sure direction is north\n");
+                }
+                if (southFree){
+                    message.append("Road name: ").append(cross[i].roadName).append(" south, x: ").append(cross[i].road2EndX).append(", y: ").append(cross[i].road2EndY).append("\n To build, make sure direction is south\n");
+                }
+                if(westFree){
+                    message.append("Road name: ").append(cross[i].roadName).append(" west, x: ").append(cross[i].road1StartX).append(", y: ").append(cross[i].road1StartY).append("\n To build, make sure direction is west\n");
+                }
+                if(eastFree){
+                    message.append("Road name: ").append(cross[i].roadName).append(" east, x: ").append(cross[i].road1EndX).append(", y: ").append(cross[i].road1EndY).append("\n To build, make sure direction is east\n");
+                }
             }
         }
         JOptionPane.showMessageDialog(null, message.toString(), "message", JOptionPane.INFORMATION_MESSAGE);
