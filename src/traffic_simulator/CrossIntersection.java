@@ -31,12 +31,12 @@ public class CrossIntersection {
         road2StartY = road1StartY - (ROAD_LENGTH/2);
         road2EndX = road2StartX;
         road2EndY = road2StartY + ROAD_LENGTH;
-        westRoadX = road1StartX + 21;
-        westRoadY = road1StartY + 2;
+        westRoadX = road1StartX + 16;
+        westRoadY = road1StartY -2;
         eastRoadX = westRoadX + 5;
-        eastRoadY = road1StartY - 2;
+        eastRoadY = road1StartY + 2;
         northRoadX = road2StartX + 2;
-        northRoadY = road2StartY + 21;
+        northRoadY = road2StartY + 16;
         southRoadX = road2StartX - 2;
         southRoadY = northRoadY + 5;
         light = newLight;

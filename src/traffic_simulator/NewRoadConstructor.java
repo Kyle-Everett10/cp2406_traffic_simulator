@@ -23,10 +23,8 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
     JCheckBox east = new JCheckBox("East");
     JCheckBox west = new JCheckBox("West");
     JButton creation = new JButton("Create road");
-    JLabel blank = new JLabel("");
     String[] roadTypes = {"Road", "T Intersection", "Cross intersection"};
     JComboBox<String> cb = new JComboBox<String>(roadTypes);
-    boolean creatingRoad = true;
 
     public NewRoadConstructor(Road[] roads, TIntersection[] tIntersections, CrossIntersection[] crossIntersections) {
         super("ROAD CONSTRUCTOR");
@@ -110,6 +108,15 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
                     }
                 }
             }
+            for(int i = 0; i < currentTIntersections.length; i++){
+                if(currentTIntersections[i] != null){
+                    for(int j = 0; j < 36; j++){
+                        if(inBetween(judgingCross.road1StartX+j, currentTIntersections[i].section1StartX, currentTIntersections[i].section1EndX) && inBetween(judgingCross.road2StartY+j, currentTIntersections[i].section2StartY, currentTIntersections[i].section2EndY)){
+                            crossValidated = false;
+                        }
+                    }
+                }
+            }
         }
         return crossValidated;
     }
@@ -143,8 +150,6 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
             }
             tempArray[currentRoads.length] = roadToAdd;
             currentRoads = tempArray;
-            creatingRoad = false;
-            creatingRoad = true;
         }
     }
 
@@ -164,20 +169,21 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
         }
         if (roadValidated) {
             for (int i = 0; i < currentCrossIntersections.length; i++) {
-                for (int j = 0; j < 36; j++) {
+                for (int j = 1; j < 36; j++) {
                     if (currentCrossIntersections[i] != null) {
-                        if ((inBetween(judgingRoad.getRoadEnd1X() + j, currentCrossIntersections[i].road1StartX, currentCrossIntersections[i].road1EndX) && inBetween(judgingRoad.getRoadEnd1Y(), currentCrossIntersections[i].road2StartY, currentCrossIntersections[i].road2EndY)) || (inBetween(judgingRoad.getRoadEnd1X(), currentCrossIntersections[i].road1StartX, currentCrossIntersections[i].road1EndX) && inBetween(judgingRoad.getRoadEnd1Y() + j, currentCrossIntersections[i].road2StartY, currentCrossIntersections[i].road2EndY))) {
+                        if ((inBetween(judgingRoad.getRoadEnd1X() + j, currentCrossIntersections[i].road1StartX, currentCrossIntersections[i].road1EndX) && inBetween(judgingRoad.getRoadEnd1Y()+j, currentCrossIntersections[i].road2StartY, currentCrossIntersections[i].road2EndY)) || (inBetween(judgingRoad.getRoadEnd1X()+j, currentCrossIntersections[i].road1StartX, currentCrossIntersections[i].road1EndX) && inBetween(judgingRoad.getRoadEnd1Y() + j, currentCrossIntersections[i].road2StartY, currentCrossIntersections[i].road2EndY))) {
                             roadValidated = false;
                         }
                     }
                 }
-                if (currentCrossIntersections[i] != null) {
-                    if (roadValidated && ((judgingRoad.getRoadEnd2X() == currentCrossIntersections[i].road1StartX || judgingRoad.getRoadEnd1X() == currentCrossIntersections[i].road1EndX) && !judgingRoad.direction.equals("west-east") && (judgingRoad.getRoadEnd1Y() == currentCrossIntersections[i].road2StartY))) {
-                        roadValidated = false;
-                    } else if (roadValidated && ((judgingRoad.getRoadEnd2Y() == currentCrossIntersections[i].road1StartY || judgingRoad.getRoadEnd1Y() == currentCrossIntersections[i].road1EndY) && !judgingRoad.direction.equals("north-south") && (judgingRoad.getRoadEnd1X() == currentCrossIntersections[i].road2StartX))) {
-                        roadValidated = false;
+            }
+            for(int i = 0; i < currentTIntersections.length; i++){
+                if(currentTIntersections[i] != null){
+                    for(int j = 1; j < 36; j++){
+                        if(inBetween(judgingRoad.roadEnd1X+j, currentTIntersections[i].section1StartX, currentTIntersections[i].section1EndX) && inBetween(judgingRoad.roadEnd1Y+j, currentTIntersections[i].section2StartY, currentTIntersections[i].section2EndY)){
+                            roadValidated = false;
+                        }
                     }
-
                 }
             }
         }
@@ -192,6 +198,11 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
         return isInBetween;
     }
 
+    public void addTIntersections(String initialDirection){
+        JOptionPane.showMessageDialog(null, "T-Intersections couldn't get working" +initialDirection, "Message", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == creation) {
@@ -199,6 +210,8 @@ public class NewRoadConstructor extends JFrame implements ActionListener {
                 addRoad(initialDirection);
             } else if (roadType == 2) {
                 addCross(initialDirection);
+            } else {
+                addTIntersections(initialDirection);
             }
         } else if (e.getSource() == north) {
             initialDirection = "north";

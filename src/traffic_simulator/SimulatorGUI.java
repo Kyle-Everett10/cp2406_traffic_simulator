@@ -28,6 +28,8 @@ public class SimulatorGUI extends JFrame implements ActionListener {
     JButton viewRoadEnds = new JButton("View the road ends by co-ordinate");
     Random rand = new Random();
     Timer timer = new Timer(100, this);
+    ArrayList<Integer> xEnds = new ArrayList<>();
+    ArrayList<Integer> yEnds = new ArrayList<>();
     final double ONE_DAY = 50;
     double time = 0.0;
     int WIDTH = 1000;
@@ -94,6 +96,8 @@ public class SimulatorGUI extends JFrame implements ActionListener {
 
     public void roadEnder() {
         StringBuilder message = new StringBuilder("These roads are available to be added onto:\n");
+        xEnds = new ArrayList<>();
+        yEnds = new ArrayList<>();
         for (int i = 0; i < roads.length; i++) {
             boolean roadEnd1Empty = true;
             boolean roadEnd2Empty = true;
@@ -119,7 +123,7 @@ public class SimulatorGUI extends JFrame implements ActionListener {
             }
             for (int j = 0; j < tIntersections.length; j++) {
                 if (tIntersections[j] != null) {
-                    if (roadEnd1Empty && ((tIntersections[j].getSection1StartX() == roads[i].getRoadEnd1X() && tIntersections[j].getSection1StartY() == roads[i].getRoadEnd1Y()) || (tIntersections[j].getSection2StartX() == roads[i].getRoadEnd1X() && tIntersections[j].getSection2StartY() == roads[j].getRoadEnd1Y()) || (tIntersections[j].section2EndX == roads[i].getRoadEnd1X() && tIntersections[j].section2EndY == roads[i].getRoadEnd1Y()))) {
+                    if (roadEnd1Empty && ((tIntersections[j].getSection1StartX() == roads[i].getRoadEnd1X() && tIntersections[j].getSection1StartY() == roads[i].getRoadEnd1Y()) || (tIntersections[j].getSection2StartX() == roads[i].getRoadEnd1X() && tIntersections[j].getSection2StartY() == roads[i].getRoadEnd1Y()) || (tIntersections[j].section2EndX == roads[i].getRoadEnd1X() && tIntersections[j].section2EndY == roads[i].getRoadEnd1Y()))) {
                         roadEnd1Empty = false;
                     }
                     if (roadEnd2Empty && ((tIntersections[j].getSection1StartX() == roads[i].getRoadEnd2X() && tIntersections[j].getSection1StartY() == roads[i].getRoadEnd2Y()) || (tIntersections[j].getSection2StartX() == roads[i].getRoadEnd2X() && tIntersections[j].getSection2StartY() == roads[j].getRoadEnd2Y()) || (tIntersections[j].section2EndX == roads[i].getRoadEnd2X() && tIntersections[j].section2EndY == roads[i].getRoadEnd2Y()))) {
@@ -137,9 +141,13 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                     xBuilder = roads[i].getRoadEnd1X() - 36;
                     yBuilder = roads[i].getRoadEnd1Y();
                 }
+                xEnds.add(xBuilder);
+                yEnds.add(yBuilder);
                 message.append("Road name: ").append(roads[i].roadName).append(", x: ").append(roads[i].getRoadEnd1X()).append(", y: ").append(roads[i].getRoadEnd1Y()).append("\n To build on this part of road, enter x: ").append(xBuilder).append(", y: ").append(yBuilder).append(" with direction: ").append(roads[i].direction).append("\n");
             }
             if (roadEnd2Empty) {
+                xEnds.add(roads[i].getRoadEnd2X());
+                yEnds.add(roads[i].getRoadEnd2Y());
                 message.append("Road name: ").append(roads[i].roadName).append(", x: ").append(roads[i].getRoadEnd1X()).append(", y: ").append(roads[i].getRoadEnd1Y()).append("\n To build on this part of road, enter x: ").append(roads[i].getRoadEnd2X()).append(", y: ").append(roads[i].getRoadEnd2Y()).append(" with direction: ").append(roads[i].direction).append("\n");
             }
         }
@@ -159,53 +167,135 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                     if (cross[i].road1StartX == roads[j].getRoadEnd2X() && cross[i].road1StartY == roads[j].getRoadEnd2Y()) {
                         westFree = false;
                     }
-                    if (cross[i].road1EndX == roads[j].getRoadEnd1X() && cross[i].road1EndY == roads[j].getRoadEnd1Y()){
+                    if (cross[i].road1EndX == roads[j].getRoadEnd1X() && cross[i].road1EndY == roads[j].getRoadEnd1Y()) {
                         eastFree = false;
                     }
                 }
-                for(int j = 0; j < cross.length; j++){
-                    if(cross[j] != cross[i] && cross[j]!=null){
-                        if(northFree && cross[j].road2EndX == cross[i].road2StartX && cross[j].road2EndY == cross[i].road2StartY){
+                for (int j = 0; j < cross.length; j++) {
+                    if (cross[j] != cross[i] && cross[j] != null) {
+                        if (northFree && cross[j].road2EndX == cross[i].road2StartX && cross[j].road2EndY == cross[i].road2StartY) {
                             northFree = false;
                         }
-                        if(southFree && cross[j].road2StartX == cross[i].road2EndX && cross[j].road2StartY == cross[i].road2EndY){
+                        if (southFree && cross[j].road2StartX == cross[i].road2EndX && cross[j].road2StartY == cross[i].road2EndY) {
                             southFree = false;
                         }
-                        if(westFree && cross[j].road1EndX == cross[i].road1StartX && cross[j].road1EndY == cross[i].road1StartY){
+                        if (westFree && cross[j].road1EndX == cross[i].road1StartX && cross[j].road1EndY == cross[i].road1StartY) {
                             westFree = false;
                         }
-                        if(eastFree && cross[j].road1StartX == cross[i].road1EndX && cross[j].road1StartY == cross[i].road1EndY){
+                        if (eastFree && cross[j].road1StartX == cross[i].road1EndX && cross[j].road1StartY == cross[i].road1EndY) {
                             eastFree = false;
                         }
                     }
                 }
-                for(int j = 0; j < tIntersections.length; j++){
-                    if(tIntersections[j] != null){
-                        if(northFree && ((tIntersections[j].section1StartX == cross[i].road2StartX && tIntersections[j].section1StartY == cross[i].road2StartY) || (tIntersections[j].section2StartX == cross[i].road2StartX && tIntersections[j].section2StartY == cross[i].road2StartY) || (tIntersections[j].section2EndX == cross[i].road2StartX && tIntersections[j].section2EndY == cross[i].road2StartY))){
+                for (int j = 0; j < tIntersections.length; j++) {
+                    if (tIntersections[j] != null) {
+                        if (northFree && ((tIntersections[j].section1StartX == cross[i].road2StartX && tIntersections[j].section1StartY == cross[i].road2StartY) || (tIntersections[j].section2StartX == cross[i].road2StartX && tIntersections[j].section2StartY == cross[i].road2StartY) || (tIntersections[j].section2EndX == cross[i].road2StartX && tIntersections[j].section2EndY == cross[i].road2StartY))) {
                             northFree = false;
                         }
-                        if(southFree && ((tIntersections[j].section1StartX == cross[i].road2EndX && tIntersections[j].section1StartY == cross[i].road2EndY) || (tIntersections[j].section2StartX == cross[i].road2EndX && tIntersections[j].section2StartY == cross[i].road2EndY) || (tIntersections[j].section2EndX == cross[i].road2EndX && tIntersections[j].section2EndY == cross[i].road2EndY))){
+                        if (southFree && ((tIntersections[j].section1StartX == cross[i].road2EndX && tIntersections[j].section1StartY == cross[i].road2EndY) || (tIntersections[j].section2StartX == cross[i].road2EndX && tIntersections[j].section2StartY == cross[i].road2EndY) || (tIntersections[j].section2EndX == cross[i].road2EndX && tIntersections[j].section2EndY == cross[i].road2EndY))) {
                             southFree = false;
                         }
-                        if(westFree && ((tIntersections[j].section1StartX == cross[i].road1StartX && tIntersections[j].section1StartY == cross[i].road1StartY) || (tIntersections[j].section2StartX == cross[i].road1StartX && tIntersections[j].section2StartY == cross[i].road1StartY) || (tIntersections[j].section2EndX == cross[i].road1StartX && tIntersections[j].section2EndY == cross[i].road1StartY))){
+                        if (westFree && ((tIntersections[j].section1StartX == cross[i].road1StartX && tIntersections[j].section1StartY == cross[i].road1StartY) || (tIntersections[j].section2StartX == cross[i].road1StartX && tIntersections[j].section2StartY == cross[i].road1StartY) || (tIntersections[j].section2EndX == cross[i].road1StartX && tIntersections[j].section2EndY == cross[i].road1StartY))) {
                             westFree = false;
                         }
-                        if(eastFree && ((tIntersections[j].section1StartX == cross[i].road1EndX && tIntersections[j].section1StartY == cross[i].road1EndY) || (tIntersections[j].section2StartX == cross[i].road1EndX && tIntersections[j].section2StartY == cross[i].road1EndY) || (tIntersections[j].section2EndX == cross[i].road1EndX && tIntersections[j].section2EndY == cross[i].road1EndY))){
+                        if (eastFree && ((tIntersections[j].section1StartX == cross[i].road1EndX && tIntersections[j].section1StartY == cross[i].road1EndY) || (tIntersections[j].section2StartX == cross[i].road1EndX && tIntersections[j].section2StartY == cross[i].road1EndY) || (tIntersections[j].section2EndX == cross[i].road1EndX && tIntersections[j].section2EndY == cross[i].road1EndY))) {
                             eastFree = false;
                         }
                     }
                 }
-                if(northFree){
+                if (northFree) {
+                    xEnds.add(cross[i].road2StartX);
+                    yEnds.add(cross[i].road2StartY);
                     message.append("Road name: ").append(cross[i].roadName).append(" north, x: ").append(cross[i].road2StartX).append(", y: ").append(cross[i].road2StartY).append("\n To build, make sure direction is north\n");
                 }
-                if (southFree){
+                if (southFree) {
+                    xEnds.add(cross[i].road2EndX);
+                    yEnds.add(cross[i].road2EndY);
                     message.append("Road name: ").append(cross[i].roadName).append(" south, x: ").append(cross[i].road2EndX).append(", y: ").append(cross[i].road2EndY).append("\n To build, make sure direction is south\n");
                 }
-                if(westFree){
+                if (westFree) {
+                    xEnds.add(cross[i].road1StartX);
+                    yEnds.add(cross[i].road1StartY);
                     message.append("Road name: ").append(cross[i].roadName).append(" west, x: ").append(cross[i].road1StartX).append(", y: ").append(cross[i].road1StartY).append("\n To build, make sure direction is west\n");
                 }
-                if(eastFree){
+                if (eastFree) {
+                    xEnds.add(cross[i].road1EndX);
+                    yEnds.add(cross[i].road1EndY);
                     message.append("Road name: ").append(cross[i].roadName).append(" east, x: ").append(cross[i].road1EndX).append(", y: ").append(cross[i].road1EndY).append("\n To build, make sure direction is east\n");
+                }
+            }
+        }
+        for (int i = 0; i < tIntersections.length; i++) {
+            if (tIntersections[i] != null) {
+                boolean road1EndEmpty = true;
+                boolean road2StartEmpty = true;
+                boolean road2EndEmpty = true;
+                for (int j = 0; j < roads.length; j++) {
+                    if ((tIntersections[i].section1StartX == roads[j].roadEnd1X && tIntersections[i].section1StartY == roads[j].roadEnd1Y) || (tIntersections[i].section1StartX == roads[j].roadEnd2X && tIntersections[i].section1StartY == roads[j].roadEnd2Y)) {
+                        road1EndEmpty = false;
+                    }
+                    if ((tIntersections[i].section2StartX == roads[j].roadEnd1X && tIntersections[i].section2StartY == roads[j].roadEnd1Y) || (tIntersections[i].section2StartX == roads[j].roadEnd2X && tIntersections[i].section2StartY == roads[j].roadEnd2Y)) {
+                        road2StartEmpty = false;
+                    }
+                    if ((tIntersections[i].section2EndX == roads[j].roadEnd1X && tIntersections[i].section2EndY == roads[j].roadEnd1Y) || (tIntersections[i].section2EndX == roads[j].roadEnd2X && tIntersections[i].section2EndY == roads[j].roadEnd2Y)) {
+                        road2EndEmpty = false;
+                    }
+                }
+                for (int j = 0; j < cross.length; j++) {
+                    if (cross[j] != null) {
+                        if ((tIntersections[i].section1StartX == cross[j].road1StartX && tIntersections[i].section1StartY == cross[j].road1StartY) || (tIntersections[i].section1StartX == cross[j].road1EndX && tIntersections[i].section1StartY == cross[j].road1EndY) || (tIntersections[i].section1StartX == cross[j].road2StartX && tIntersections[i].section1StartY == cross[j].road2StartY) || (tIntersections[i].section1StartX == cross[j].road2EndX && tIntersections[i].section1StartY == cross[j].road2EndY)) {
+                            road1EndEmpty = false;
+                        }
+                        if ((tIntersections[i].section2StartX == cross[j].road1StartX && tIntersections[i].section2StartY == cross[j].road1StartY) || (tIntersections[i].section2StartX == cross[j].road1EndX && tIntersections[i].section2StartY == cross[j].road1EndY) || (tIntersections[i].section2StartX == cross[j].road2StartX && tIntersections[i].section2StartY == cross[j].road2StartY) || (tIntersections[i].section2StartX == cross[j].road2EndX && tIntersections[i].section2StartY == cross[j].road2EndY)) {
+                            road2StartEmpty = false;
+                        }
+                        if ((tIntersections[i].section2EndX == cross[j].road1StartX && tIntersections[i].section2EndY == cross[j].road1StartY) || (tIntersections[i].section2EndX == cross[j].road1EndX && tIntersections[i].section2EndY == cross[j].road1EndY) || (tIntersections[i].section2EndX == cross[j].road2StartX && tIntersections[i].section2EndY == cross[j].road2StartY) || (tIntersections[i].section2EndX == cross[j].road2EndX && tIntersections[i].section2EndY == cross[j].road2EndY)) {
+                            road2EndEmpty = false;
+                        }
+                    }
+                }
+                for (int j = 0; j < tIntersections.length; j++) {
+                    if (tIntersections[j] != tIntersections[i] && tIntersections[j] != null) {
+                        if ((tIntersections[i].section1StartX == tIntersections[j].section1StartX && tIntersections[i].section1StartY == tIntersections[j].section1StartY) || (tIntersections[i].section1StartX == tIntersections[j].section2StartX && tIntersections[i].section1StartY == tIntersections[j].section2StartY) || (tIntersections[i].section1StartX == tIntersections[j].section2EndX && tIntersections[i].section1StartY == tIntersections[j].section2EndY)) {
+                            road1EndEmpty = false;
+                        }
+                        if ((tIntersections[i].section2StartX == tIntersections[j].section1StartX && tIntersections[i].section2StartY == tIntersections[j].section1StartY) || (tIntersections[i].section2StartX == tIntersections[j].section2StartX && tIntersections[i].section2StartY == tIntersections[j].section2StartY) || (tIntersections[i].section2StartX == tIntersections[j].section2EndX && tIntersections[i].section2StartY == tIntersections[j].section2EndY)) {
+                            road2StartEmpty = false;
+                        }
+                        if ((tIntersections[i].section2EndX == tIntersections[j].section1StartX && tIntersections[i].section2EndY == tIntersections[j].section1StartY) || (tIntersections[i].section2EndX == tIntersections[j].section2StartX && tIntersections[i].section2EndY == tIntersections[j].section2StartY) || (tIntersections[i].section2EndX == tIntersections[j].section2EndX && tIntersections[i].section2EndY == tIntersections[j].section2EndY)) {
+                            road2EndEmpty = false;
+                        }
+                    }
+                }
+                String left;
+                String right;
+                if (tIntersections[i].direction.equals("north")) {
+                    left = "west";
+                    right = "east";
+                } else if (tIntersections[i].direction.equals("south")) {
+                    left = "east";
+                    right = "west";
+                } else if (tIntersections[i].direction.equals("east")) {
+                    left = "south";
+                    right = "north";
+                } else {
+                    left = "north";
+                    right = "south";
+                }
+                if (road1EndEmpty) {
+                    xEnds.add(tIntersections[i].section1StartX);
+                    yEnds.add(tIntersections[i].section1StartY);
+                    message.append("Road name: ").append(tIntersections[i].intersectionName).append(" middle, x: ").append(tIntersections[i].section1StartX).append(", y: ").append(tIntersections[i].section1StartY).append("\n To build, make sure direction is ").append(tIntersections[i].direction).append("\n");
+                }
+                if (road2StartEmpty) {
+                    xEnds.add(tIntersections[i].middle1X+1);
+                    yEnds.add(tIntersections[i].section2StartY);
+                    message.append("Road name: ").append(tIntersections[i].intersectionName).append(" right, x: ").append(tIntersections[i].section2EndX+1).append(", y: ").append(tIntersections[i].section2StartY).append("\n To build, make sure direction is ").append(left).append("\n");
+                }
+                if (road2EndEmpty) {
+                    xEnds.add(tIntersections[i].section2EndX);
+                    yEnds.add(tIntersections[i].section2EndY);
+                    message.append("Road name: ").append(tIntersections[i].intersectionName).append(" left, x: ").append(tIntersections[i].section2EndX+1).append(", y: ").append(tIntersections[i].section2EndY).append("\n To build, make sure direction is ").append(right).append("\n");
                 }
             }
         }
@@ -239,7 +329,7 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                 crossCarIsOn = cross[j];
                             }
                         } else if (vehicles[i].getDirection().equals("south")) {
-                            if (vehicles[i].getCurrentXFront() == cross[j].northRoadX && vehicles[i].getCurrentYFront() == cross[j].northRoadX) {
+                            if (vehicles[i].getCurrentXFront() == cross[j].northRoadX && vehicles[i].getCurrentYFront() == cross[j].northRoadY) {
                                 onIntersection = true;
                                 crossCarIsOn = cross[j];
                             }
@@ -306,30 +396,30 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                 if (decision == 1) {
                                     switch (vehicles[i].getDirection()) {
                                         case "north":
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle2Y, "west");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle2Y, "west");
                                             break;
                                         case "south":
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle2Y, "east");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle2Y, "east");
                                             break;
                                         case "east":
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle2Y, "north");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle2Y, "north");
                                             break;
                                         default:
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle2Y, "south");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle2Y, "south");
                                     }
                                 } else {
                                     switch (vehicles[i].getDirection()) {
                                         case "north":
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle1Y, "east");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle1Y, "east");
                                             break;
                                         case "south":
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle1Y, "west");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle1Y, "west");
                                             break;
                                         case "east":
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle1Y, "south");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle1Y, "south");
                                             break;
                                         default:
-                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle1X, intersectionCarIsOn.middle1Y, "north");
+                                            vehicles[i].snapOnIntersection(intersectionCarIsOn.middle2X, intersectionCarIsOn.middle1Y, "north");
                                     }
                                 }
                             }
@@ -345,10 +435,10 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                             vehicles[i].snapOnIntersection(crossCarIsOn.getEastSnapX(), crossCarIsOn.getEastSnapY(), "east");
                                             break;
                                         case "east":
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX() + 2, crossCarIsOn.getNorthSnapY(), "north");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX(), crossCarIsOn.getNorthSnapY(), "north");
                                             break;
                                         default:
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX() - 2, crossCarIsOn.getSouthSnapY(), "south");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX(), crossCarIsOn.getSouthSnapY(), "south");
                                     }
                                 } else if (decision == 2) {
                                     switch (vehicles[i].getDirection()) {
@@ -359,10 +449,10 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                                             vehicles[i].snapOnIntersection(crossCarIsOn.getWestSnapX(), crossCarIsOn.getWestSnapY(), "west");
                                             break;
                                         case "east":
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX() - 2, crossCarIsOn.getSouthSnapY(), "south");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getSouthSnapX(), crossCarIsOn.getSouthSnapY(), "south");
                                             break;
                                         default:
-                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX() + 2, crossCarIsOn.getNorthSnapY(), "north");
+                                            vehicles[i].snapOnIntersection(crossCarIsOn.getNorthSnapX(), crossCarIsOn.getNorthSnapY(), "north");
                                     }
                                 } else {
                                     vehicles[i].drive();
@@ -373,6 +463,27 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                 }
                 if (vehicles[i].getCurrentYFront() < 0 || vehicles[i].getCurrentYFront() > 500 || vehicles[i].getCurrentXFront() < 0 || vehicles[i].getCurrentXFront() > 500) {
                     vehicles[i] = null;
+                }
+                for(int j = 0; j < xEnds.toArray().length; j++){
+                    if(xEnds.get(j) != null && vehicles[i] != null){
+                        if(vehicles[i].getDirection().equals("east")){
+                            if(vehicles[i].getCurrentXFront() == xEnds.get(j) && vehicles[i].getCurrentYFront()+2 == yEnds.get(j) && xEnds.get(j) != 0){
+                                vehicles[i] = null;
+                            }
+                        } else if (vehicles[i].getDirection().equals("west")){
+                            if(vehicles[i].getCurrentXFront() == xEnds.get(j) && vehicles[i].getCurrentYFront()+2 == yEnds.get(j) && xEnds.get(j) != 0){
+                                vehicles[i] = null;
+                            }
+                        } else if (vehicles[i].getDirection().equals("north")){
+                            if(vehicles[i].getCurrentXFront()+2 == xEnds.get(j) && vehicles[i].getCurrentYFront() == yEnds.get(j) && xEnds.get(j) != 0){
+                                vehicles[i] = null;
+                            }
+                        } else {
+                            if(vehicles[i].getCurrentXFront()-2 == xEnds.get(j) && vehicles[i].getCurrentYFront() == yEnds.get(j) && xEnds.get(j) != 0){
+                                vehicles[i] = null;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -406,18 +517,18 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                         if (roads[j].roadEnd1X == 0 || roads[j].roadEnd1Y == 0) {
                             for (int k = 0; k < car.length; k++) {
                                 if (car[k] != null) {
-                                    if ((car[k].getCurrentYBack() - 3 <= roads[j].getRoadEnd1Y() && roads[j].direction.equals("north-south") && car[k].getCurrentXFront() - 2 == roads[j].getRoadEnd1X()) || (car[k].getCurrentXBack() - 3 <= roads[j].getRoadEnd1X() && roads[j].direction.equals("west-east") && car[k].getCurrentYFront() - 2 == roads[j].getRoadEnd1Y())) {
+                                    if  (car[k].getCurrentXBack() - 3 <= roads[j].getRoadEnd1X() && roads[j].direction.equals("west-east")){
                                         canSpawn = false;
                                     }
                                 } else if (i == 0) {
                                     if (roads[j].direction.equals("north-south")) {
-                                        spawnDirection = "north";
-                                        spawnX = roads[j].getRoadEnd1X() - 2;
+                                        spawnDirection = "south";
+                                        spawnX = roads[j].getRoadEnd1X() + 2;
                                         spawnY = roads[j].getRoadEnd1Y();
                                     } else {
                                         spawnDirection = "east";
                                         spawnX = roads[j].getRoadEnd1X();
-                                        spawnY = roads[j].getRoadEnd1Y() + 2;
+                                        spawnY = roads[j].getRoadEnd1Y() - 2;
                                     }
                                     spawningRoad = true;
                                     foundRoad = roads[j];
@@ -427,12 +538,12 @@ public class SimulatorGUI extends JFrame implements ActionListener {
                             if (canSpawn) {
                                 if (roads[j].direction.equals("north-south")) {
                                     spawnDirection = "south";
-                                    spawnX = roads[j].getRoadEnd1X() - 2;
+                                    spawnX = roads[j].getRoadEnd1X() + 2;
                                     spawnY = roads[j].getRoadEnd1Y();
                                 } else {
                                     spawnDirection = "east";
                                     spawnX = roads[j].getRoadEnd1X();
-                                    spawnY = roads[j].getRoadEnd1Y() + 2;
+                                    spawnY = roads[j].getRoadEnd1Y() - 2;
                                 }
                                 spawningRoad = true;
                                 foundRoad = roads[j];

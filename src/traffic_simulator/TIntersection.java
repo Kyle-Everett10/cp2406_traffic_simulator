@@ -71,21 +71,23 @@ public class TIntersection {
 
     public boolean isIntersectionFree(Vehicle car){
         boolean isFree = true;
-        if(direction.equals("north")){
-            if(inBetween(car.getCurrentXFront(), this.middle2X, this.middle1X) && inBetween(car.getCurrentYFront(), this.middle2Y, this.middle1Y)){
-                isFree = false;
-            }
-        } else if (direction.equals("south")){
-            if(inBetween(car.getCurrentXFront(), this.middle1X, this.middle2X) && inBetween(car.getCurrentYFront(), this.middle1Y, this.middle2Y)){
-                isFree = false;
-            }
-        } else if (direction.equals("east")){
-            if(inBetween(car.getCurrentXFront(), this.middle2X, this.middle1X) && inBetween(car.getCurrentYFront(), this.middle1Y, this.middle2Y)){
-                isFree = false;
-            }
-        } else {
-            if(inBetween(car.getCurrentXFront(), this.middle1X, this.middle2X) && inBetween(car.getCurrentYFront(), this.middle2Y, this.middle1Y)){
-                isFree = false;
+        if(car != null){
+            if(direction.equals("north")){
+                if(inBetween(car.getCurrentXFront(), this.middle2X, this.middle1X) && inBetween(car.getCurrentYFront(), this.middle2Y, this.middle1Y)){
+                    isFree = false;
+                }
+            } else if (direction.equals("south")){
+                if(inBetween(car.getCurrentXFront(), this.middle1X, this.middle2X) && inBetween(car.getCurrentYFront(), this.middle1Y, this.middle2Y)){
+                    isFree = false;
+                }
+            } else if (direction.equals("east")){
+                if(inBetween(car.getCurrentXFront(), this.middle2X, this.middle1X) && inBetween(car.getCurrentYFront(), this.middle1Y, this.middle2Y)){
+                    isFree = false;
+                }
+            } else {
+                if(inBetween(car.getCurrentXFront(), this.middle1X, this.middle2X) && inBetween(car.getCurrentYFront(), this.middle2Y, this.middle1Y)){
+                    isFree = false;
+                }
             }
         }
         return isFree;
@@ -141,7 +143,7 @@ public class TIntersection {
 
     private boolean inBetween(int input, int max, int min){
         boolean decision = false;
-        if(input >= min && input <= max) {
+        if(input > min && input < max) {
             decision = true;
         }
         return decision;
